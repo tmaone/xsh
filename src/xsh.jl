@@ -1,4 +1,4 @@
-module FooBar
+module xsh
 
 # package code goes here
 
