@@ -1,0 +1,21 @@
+detect-git:
+# find out if git repository is available
+ifeq ($(shell [ -e $(XSH_HOME)/.git ] && echo true || echo 'Warning: git information unavailable; versioning information limited' >&2), true)
+IS_GIT = 1
+else
+IS_GIT = 0
+endif
+
+detect-julia:
+ifneq ($(shell which julia 2>/dev/null),)
+JULIA=$(shell which julia 2>/dev/null)
+USE_SYSTEM_JULIA = 1
+else
+JULIA = 
+USE_SYSTEM_JULIA = 0
+endif
+
+# $(shell echo "Using System Julia")
+# $(shell echo "System julia is not available. Using own dependency.")
+# else ifeq ($(OS), Darwin)
+# 	shell [ -e `which julia 2>/dev/null` ] && echo true || echo 'System julia is not available. Using own dependency.' >&2), true)

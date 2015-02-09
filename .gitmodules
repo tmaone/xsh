@@ -1,0 +1,3 @@
+[submodule "deps/julia"]
+	path = deps/julia
+	url = git://github.com/JuliaLang/Julia.git
