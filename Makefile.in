@@ -6,6 +6,17 @@ else
 IS_GIT = 0
 endif
 
+get-version: detect-git
+XSH_FVER = $(shell cat $(XSH_HOME)/version)
+XSH_COMMIT =
+XSH_VER = 
+ifeq ($(IS_GIT), 1)
+XSH_COMMIT = $(shell git rev-parse --short=5 HEAD)
+XSH_VER = $(XSH_FVER).$(XSH_COMMIT)
+else
+XSH_VER = $(XSH_FVER)
+endif
+
 detect-julia:
 ifneq ($(shell which julia 2>/dev/null),)
 JULIA=$(shell which julia 2>/dev/null)
@@ -15,7 +26,135 @@ JULIA =
 USE_SYSTEM_JULIA = 0
 endif
 
-# $(shell echo "Using System Julia")
-# $(shell echo "System julia is not available. Using own dependency.")
-# else ifeq ($(OS), Darwin)
-# 	shell [ -e `which julia 2>/dev/null` ] && echo true || echo 'System julia is not available. Using own dependency.' >&2), true)
+# Directories where said libraries get installed to
+prefix ?= $(abspath xsh-$(XSH_VER))
+bindir = $(prefix)/bin
+libdir = $(prefix)/lib
+private_libdir = $(libdir)/xshell
+includedir = $(prefix)/include
+sysconfdir = $(prefix)/etc
+datarootdir = $(prefix)/share
+docdir = $(datarootdir)/doc/xshell
+mandir = $(datarootdir)/man
+man1dir = $(mandir)/man1
+
+# Directories where things get built into
+build_prefix = $(XSH_HOME)/build
+build_bindir = $(build_prefix)/bin
+build_libdir = $(build_prefix)/lib
+build_shlibdir = $(build_libdir)
+build_private_libdir = $(build_prefix)/lib/xshell
+build_includedir = $(build_prefix)/include
+build_sysconfdir = $(build_prefix)/etc
+build_datarootdir = $(build_prefix)/share
+build_docdir = $(build_datarootdir)/doc/xshell
+build_mandir = $(build_datarootdir)/man
+build_man1dir = $(build_mandir)/man1
+
+# XSH Definitions
+XSH_CPU_TARGET ?= native
+XSH_EXECUTABLE_DEBUG = $(build_bindir)/xsh-debug
+XSH_EXECUTABLE_RELEASE = $(build_bindir)/xsh
+XSH_EXECUTABLE = $(XSH_EXECUTABLE)
+XSH_LIBRARY=$(build_private_libdir)/libxsh.dylib
+XSH_SYSTEM_IMAGE=$(build_private_libdir)/xshell-sys.ji
+
+# Julia Definitions
+# JULIA_BIN=$(build_bindir)/julia
+# JULIA_INCLUDE=$(build_includedir)/julia
+# JULIA_LIB=$(build_libdir)/julia
+# JULIA_SYSTEM_IMAGE=$(JULIA_LIB)/sys.ji
+# JULIA_SHARE=$(build_datarootdir)/julia
+# JULIA_BASE=$(JULIA_SHARE)/base
+# JULIA_BUILD_EXECUTABLE=$(JULIA_SHARE)/build_executable.jl
+# JULIA_BUILD_SYSIMG=$(JULIA_SHARE)/build_sysimg.jl
+# JULIA_CPU_TARGET ?= native
+# JULIA_PKGDIR=$(JULIA_SHARE)/site
+
+# file extensions
+ifeq ($(OS), WINNT)
+	SHLIB_EXT = dll
+	SHELL_EXT = bat
+else ifeq ($(OS), Darwin)
+	SHLIB_EXT = dylib
+	SHELL_EXT = sh
+else
+	SHLIB_EXT = so
+	SHELL_EXT = sh
+endif
+
+define dir_target
+$$(subst $$(abspath $(XSH_HOME))/,,$$(abspath $(1))): $$(abspath $(1))
+$$(abspath $(1)):
+	@mkdir -p $$@
+endef
+
+define rm_dir
+$$(subst $$(abspath $(XSH_HOME))/,,$$(abspath $(1))): $$(abspath $(1))
+$$(abspath $(1)):
+	@rm -rfv $$@
+endef
+
+define symlink_target
+CLEAN_TARGETS += clean-$(2)/$(1)
+clean-$$(abspath $(2)/$(1)):
+@-rm $$(abspath $(2)/$(1))
+$$(subst $$(abspath $(XSH_HOME))/,,$$(abspath $(2)/$(1))): $$(abspath $(2)/$(1))
+$$(abspath $(2)/$(1)): | $$(abspath $(2))
+@ln -sf $$(abspath $(1)) $$@
+endef
+
+exec = $(shell $(call spawn,$(1)))
+
+pathsearch = $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(2)))))
+
+# Colors for make
+ifndef VERBOSE
+VERBOSE = 0
+endif
+
+ifeq ($(VERBOSE), 0)
+
+QUIET_MAKE = -s
+
+CCCOLOR="\033[34m"
+LINKCOLOR="\033[34;1m"
+XSHCOLOR="\033[32;1m"
+
+SRCCOLOR="\033[33m"
+BINCOLOR="\033[37;1m"
+JULCOLOR="\033[34;1m"
+ENDCOLOR="\033[0m"
+
+GOAL=$(subst ','\'',$(subst $(abspath $(XSH_HOME))/,,$(abspath $@)))
+
+PRINT_CC = printf '    %b %b\n' $(CCCOLOR)CC$(ENDCOLOR) $(SRCCOLOR)$(GOAL)$(ENDCOLOR); $(1)
+PRINT_LINK = printf '    %b %b\n' $(LINKCOLOR)LINK$(ENDCOLOR) $(BINCOLOR)$(GOAL)$(ENDCOLOR); $(1)
+PRINT_XSHELL = printf '    %b %b\n' $(XSHELLCOLOR)XSHELL$(ENDCOLOR) $(BINCOLOR)$(GOAL)$(ENDCOLOR); $(1)
+else
+QUIET_MAKE =
+PRINT_CC = echo '$(subst ','\'',$(1))'; $(1)
+PRINT_LINK = echo '$(subst ','\'',$(1))'; $(1)
+PRINT_XSHELL = echo '$(subst ','\'',$(1))'; $(1)
+endif
+
+### util targets
+
+git-submodules-init: detect-git
+ifneq ($(IS_GIT), 0)
+	@-git submodule update --init
+else
+	$(warn "Submodules could not be updated because git is unavailable")
+endif
+
+git-submodules-update: detect-git
+ifneq ($(IS_GIT), 0)
+	@-git submodule foreach git pull origin master
+else
+	$(warn "Submodules could not be updated because git is unavailable")
+endif
+
+get-dist-name: get-version
+ifeq ($(XSH_DIST),)
+	XSH_DIST_NAME = xshell-$(XSH_VER)-$(OS)-$(ARCH)
+endif
