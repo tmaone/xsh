@@ -1,5 +1,2 @@
-module common
+include("version.jl")
 
-end
-
-import common
