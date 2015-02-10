@@ -31,14 +31,30 @@ xsh-release-symlink:
 $(build_sysconfdir)/xshrc:
 	@cp $< $@
 
+julia:
+	$(call spawn,$(JULIA)) 
 
+run:
+	$(call spawn,$(JULIA)) src/xsh.jl
 
+# devel-sys:
+# 	@export JULIA_PKGDIR=$(JULIA_PKGDIR) && \
+# 	$(call spawn,$(JULIA_BIN)) -C $(JULIA_CPU_TARGET) -J$(JULIA_SYSTEM_IMAGE) 
 
+# devel-sys-xshell:
+# 	@export JULIA_PKGDIR=$(JULIA_PKGDIR) && \
+# 	$(call spawn,$(JULIA_BIN)) -C $(JULIA_CPU_TARGET) -J$(JULIA_SYSTEM_IMAGE) $(XSHELL_HOME)/lib/xshell.jl
 
+# devel-xshell:
+# 	@export JULIA_PKGDIR=$(JULIA_PKGDIR) && \
+# 	$(call spawn,$(JULIA_BIN)) -C $(JULIA_CPU_TARGET) -J$(XSHELL_SYSTEM_IMAGE) $(XSHELL_HOME)/lib/xshell.jl
 
+# devel:
+# 	@export JULIA_PKGDIR=$(JULIA_PKGDIR) && \
+# 	$(call spawn,$(JULIA_BIN)) -C $(JULIA_CPU_TARGET) -J$(XSHELL_SYSTEM_IMAGE)
 
-	# @export private_libdir=$(private_libdir) && \
-	# $(MAKE) $(QUIET_MAKE) LD_LIBRARY_PATH=$(build_libdir):$(LD_LIBRARY_PATH) JULIA_EXECUTABLE="$(JULIA_EXECUTABLE_$@)" $(build_private_libdir)/sys.$(SHLIB_EXT)
+# @export private_libdir=$(private_libdir) && \
+# $(MAKE) $(QUIET_MAKE) LD_LIBRARY_PATH=$(build_libdir):$(LD_LIBRARY_PATH) JULIA_EXECUTABLE="$(JULIA_EXECUTABLE_$@)" $(build_private_libdir)/sys.$(SHLIB_EXT)
 
 # all: detect-julia
 
