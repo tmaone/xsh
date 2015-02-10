@@ -1,4 +1,6 @@
+#!/usr/bin/env julia
 
+include("common.jl")
 
 
 
