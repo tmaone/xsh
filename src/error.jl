@@ -1,0 +1,3 @@
+module error
+
+end
