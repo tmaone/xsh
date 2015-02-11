@@ -3,7 +3,8 @@
 baremodule xsh
 
 import Base:
-    include
+    include,
+    isfile
 
 importall Base.Operators
 
@@ -11,6 +12,9 @@ eval(x) = Core.eval(xsh, x)
 eval(m,x) = Core.eval(m, x)
 
 include("version.jl")
+if isfile("build_h.jl")
+    include("build_h.jl")
+end
 include("common.jl")
 include("env.jl")
 include("lib.jl")
