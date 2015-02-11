@@ -12,18 +12,19 @@ eval(x) = Core.eval(xsh, x)
 eval(m,x) = Core.eval(m, x)
 
 include("version.jl")
+
 if isfile("build_h.jl")
     include("build_h.jl")
 end
+
 include("common.jl")
 include("env.jl")
 include("lib.jl")
 
-
 include("arg.jl")
 include("cd.jl")
 include("clock.jl")
-include("color.jl")
+include("colour.jl")
 include("commands.jl")
 include("complete.jl")
 include("config.jl")
