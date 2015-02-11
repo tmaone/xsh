@@ -7,6 +7,8 @@ import Base:
     length,
     show
 
+# export 
+
 get(key::AbstractString) = ENV[key]
 get(key::Symbol) = ENV[string(key)]
 set(key::AbstractString, value::AbstractString) = ENV[key] = value
