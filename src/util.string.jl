@@ -2,6 +2,8 @@ module string
 
 using Compat
 
+export string2symbol
+
 function repr_symbol( s::Symbol )
     v = string(s)
     if length(v) == 0
@@ -12,6 +14,19 @@ function repr_symbol( s::Symbol )
         v = "sym\""*escape_string(v)*"\""
     end
     v
+end
+
+function string2symbol(string::ASCIIString)
+    return Symbol(string)
+end
+
+function titleof( x::Any )
+    typx = typeof( x )
+    if typx == Module || typx == Function
+        return string( x )
+    else
+        return string( typx )
+    end
 end
 
 #delete a code_point before the p "width" position

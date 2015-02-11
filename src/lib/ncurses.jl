@@ -56,8 +56,12 @@ const BUTTON3_PRESSED = NCURSES_MOUSE_MASK( 3, NCURSES_BUTTON_PRESSED )
 const BUTTON4_PRESSED = NCURSES_MOUSE_MASK( 4, NCURSES_BUTTON_PRESSED )
 const REPORT_MOUSE_POSITION = NCURSES_MOUSE_MASK( 5, 8 ) # NCURSES_MOUSE_VERSION=1
 
+export NCURSES_MOUSE_MASK, NCURSES_BUTTON_PRESSED, BUTTON1_PRESSED, BUTTON2_PRESSED, BUTTON3_PRESSED, BUTTON4_PRESSED, REPORT_MOUSE_POSITION
+
 ncurses = get_lib(:ncurses)
 panel = get_lib(:panel)
+
+export ncurses, panel
 
 function initscr()
     ccall( dlsym( ncurses, :initscr), Ptr{Void}, () )
@@ -374,6 +378,6 @@ function set_panel_userptr( p1::Ptr{Void}, p2::Ptr{Void} )
     ccall(dlsym( panel, :set_panel_userptr), Void, (Ptr{Void}, Ptr{Void}), p1, p2 )
 end
 
-export initscr, endwin, isendwin, newwin, subwin, delwin, derwin, werase, erase, refresh, mvwaddch, wclear, mvwprintw, touchwin, wmove, box, wrefresh, wgetch, nocbreak, keypad, nodelay, noecho, cbreak, echo, raw, noraw, timeout, notimeout, mvwin, getwinbegyx, beep, wtimeout, flash, getwinmaxyx, is_term_resized, wresize, getcuryx, start_color, init_pair, has_colors, wattroff, wattron, wattrset, wbkgdset, wbkgd, curs_set, has_mouse, mousemask, mouseinterval, getmouse, mouseByteString, baudrate, clearok, immedok, napms, update_panels, doupdate, new_panel, top_panel, bottom_panel, hide_panel, move_panel, del_panel, show_panel, panel_hidden, replace_panel, set_panel_userptr
+export initscr, endwin, isendwin, newwin, subwin, delwin, derwin, werase, erase, refresh, mvwaddch, wclear, mvwprintw, touchwin, wmove, box, wrefresh, wgetch, nocbreak, keypad, nodelay, noecho, cbreak, echo, raw, noraw, timeout, notimeout, mvwin, getwinbegyx, beep, wtimeout, flash, getwinmaxyx, is_term_resized, wresize, getcuryx, start_color, init_pair, init_color, has_colors, wattroff, wattron, wattrset, wbkgdset, wbkgd, curs_set, has_mouse, mousemask, mouseinterval, getmouse, mouseByteString, baudrate, clearok, immedok, napms, update_panels, doupdate, new_panel, top_panel, bottom_panel, hide_panel, move_panel, del_panel, show_panel, panel_hidden, replace_panel, set_panel_userptr
 
 end

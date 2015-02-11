@@ -20,6 +20,8 @@ end
 include("common.jl")
 include("env.jl")
 include("lib.jl")
+include("util.jl")
+
 
 include("arg.jl")
 include("cd.jl")
@@ -63,7 +65,6 @@ include("source.jl")
 include("task.jl")
 include("term.jl")
 include("user.jl")
-include("util.jl")
 include("wd.jl")
 include("window.jl")
 include("xshell.jl")
