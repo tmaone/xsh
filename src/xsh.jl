@@ -1,4 +1,4 @@
-#!/usr/bin/env julia
+#!/usr/bin/env julia --depwarn=no
 
 baremodule xsh
 
@@ -68,6 +68,7 @@ include("user.jl")
 include("wd.jl")
 include("window.jl")
 include("xshell.jl")
+
 include("main.jl")
 
 end

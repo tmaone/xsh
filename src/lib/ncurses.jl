@@ -6,6 +6,7 @@ add_lib(Library(:ncurses,"libncursestw"))
 add_lib(Library(:form, "libformtw"))
 add_lib(Library(:menu, "libmenutw"))
 add_lib(Library(:panel, "libpaneltw"))
+add_lib(Library(:cdk, "libcdk.dylib.6.0.4"))
 
 const COLOR_BLACK   = 0
 const COLOR_RED     = 1
@@ -18,14 +19,16 @@ const COLOR_WHITE   = 7
 
 export COLOR_BLACK, COLOR_RED, COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE
 
+chtype = UInt8
+
+COLOR_PAIR( n ) = NCURSES_BITS(n, 0)
+export COLOR_PAIR
+
 const NCURSES_ATTR_SHIFT =8
 function NCURSES_BITS( m, shf)
     m << (shf + NCURSES_ATTR_SHIFT)
 end
-
-COLOR_PAIR( n ) = NCURSES_BITS(n, 0)
-
-export COLOR_PAIR
+export NCURSES_BITS
 
 const A_NORMAL     = uint32(0)
 const A_ATTRIBUTES = ~uint32(0)
@@ -64,8 +67,20 @@ ncurses = get_lib(:ncurses)
 panel = get_lib(:panel)
 form = get_lib(:form)
 menu = get_lib(:menu)
+cdk = get_lib(:cdk)
 
-export ncurses, panel
+export ncurses, panel, form, menu
+
+NCURSES_VERSION = ""
+
+export NCURSES_VERSION
+
+function get_nc_version()
+    nc_ver = ccall( dlsym( ncurses, :curses_version ), Ptr{UInt8}, ())
+    if nc_ver != C_NULL
+        NCURSES_VERSION = bytestring(nc_ver)
+    end
+end
 
 function initscr()
     ccall( dlsym( ncurses, :initscr), Ptr{Void}, () )
@@ -107,6 +122,18 @@ function mvwprintw( win::Ptr{Void}, row::Int, height::Int, fmt::String, str::Str
     ccall( dlsym( ncurses, :mvwprintw), Void,
         ( Ptr{Void}, Int, Int, Ptr{Uint8}, Ptr{Uint8}),
         win, row, height, fmt, str )
+end
+
+function printw( str::String )
+    ccall( dlsym( ncurses, :printw), Void, (Ptr{Uint8},), str )
+end
+
+function mvprintw( row::Int, height::Int, str::String )
+    ccall( dlsym( ncurses, :printw), Void, (Int, Int, Ptr{Uint8}), row, height, str )
+end
+
+function wprintw( win::Ptr{Void} , str::String )
+    ccall( dlsym( ncurses, :printw), Void, (Ptr{Void}, Ptr{Uint8}), win, str )
 end
 
 function wmove( win, y::Int, x::Int )
@@ -380,6 +407,10 @@ end
 
 function set_panel_userptr( p1::Ptr{Void}, p2::Ptr{Void} )
     ccall(dlsym( panel, :set_panel_userptr), Void, (Ptr{Void}, Ptr{Void}), p1, p2 )
+end
+
+function wborder( win::Ptr{Void},ls::chtype,rs::chtype,ts::chtype,bs::chtype,tl::chtype,tr::chtype,bl::chtype,br::chtype)
+    ccall(dlsym( panel, :wborder), Int, (Ptr{Void}, Uint8, Uint8, Uint8, Uint8, Uint8, Uint8, Uint8, Uint8), ls, rs,ts, bs, tl, tr, bl, br)
 end
 
 export initscr, endwin, isendwin, newwin, subwin, delwin, derwin, werase, erase, refresh, mvwaddch, wclear, mvwprintw, touchwin, wmove, box, wrefresh, wgetch, nocbreak, keypad, nodelay, noecho, cbreak, echo, raw, noraw, timeout, notimeout, mvwin, getwinbegyx, beep, wtimeout, flash, getwinmaxyx, is_term_resized, wresize, getcuryx, start_color, init_pair, init_color, has_colors, wattroff, wattron, wattrset, wbkgdset, wbkgd, curs_set, has_mouse, mousemask, mouseinterval, getmouse, mouseByteString, baudrate, clearok, immedok, napms, update_panels, doupdate, new_panel, top_panel, bottom_panel, hide_panel, move_panel, del_panel, show_panel, panel_hidden, replace_panel, set_panel_userptr
