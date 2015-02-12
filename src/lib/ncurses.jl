@@ -2,8 +2,10 @@ module nc
 
 using xsh.lib
 
-add_lib(Library(:ncurses,"libncurses"))
-add_lib(Library(:panel, "libpanel"))
+add_lib(Library(:ncurses,"libncursestw"))
+add_lib(Library(:form, "libformtw"))
+add_lib(Library(:menu, "libmenutw"))
+add_lib(Library(:panel, "libpaneltw"))
 
 const COLOR_BLACK   = 0
 const COLOR_RED     = 1
@@ -60,6 +62,8 @@ export NCURSES_MOUSE_MASK, NCURSES_BUTTON_PRESSED, BUTTON1_PRESSED, BUTTON2_PRES
 
 ncurses = get_lib(:ncurses)
 panel = get_lib(:panel)
+form = get_lib(:form)
+menu = get_lib(:menu)
 
 export ncurses, panel
 

@@ -2,6 +2,12 @@ using BinDeps
 
 @BinDeps.setup
 
+libnames = ["libncurses"]
+suffixes = ["", "-5.9", "5.9", "5.4"]
+options = ["",""]
+extensions = ["", ".a", ".so.5"]
+
+
 ncurses = library_dependency(
     "libncurses",
     aliases = ["libncurses", "libncurses-5.9"]
