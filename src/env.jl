@@ -9,8 +9,8 @@ import Base:
 
 # export 
 
-get(key::AbstractString) = ENV[key]
-get(key::Symbol) = ENV[string(key)]
+get(key::AbstractString) = has(key) ? ENV[key] : ""
+get(key::Symbol) = has(string(key)) ? ENV[string(key)] : ""
 set(key::AbstractString, value::AbstractString) = ENV[key] = value
 set(key::Symbol, value::Symbol) = ENV[string(key)] = string(value)
 has(key::AbstractString) = _hasenv(key)
@@ -18,12 +18,6 @@ has(key::Symbol) = _hasenv(string(key))
 length() = length(ENV)
 show() = show(ENV)
 
-USER = get("USER")
-SHELL = get("SHELL")
-HOME = get("HOME")
-PATH = get("PATH")
-PWD = get("PWD")
-TERM = get("TERM")
-TMPDIR = get("TMPDIR")
+export get, set, has, length, show
 
 end
