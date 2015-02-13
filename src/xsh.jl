@@ -1,7 +1,17 @@
 #!/usr/bin/env julia --depwarn=no
 
+module xsh
 
-# baremodule xsh
+include("xsh_h.jl")
+
+
+
+
+
+end
+
+
+
 
 # import Base:
 #     include,
@@ -12,22 +22,22 @@
 # eval(x) = Core.eval(xsh, x)
 # eval(m,x) = Core.eval(m, x)
 
-include("version.jl")
+# include("version.jl")
 
-if isfile("build_h.jl")
-    include("build_h.jl")
-end
+# if isfile("build_h.jl")
+#     include("build_h.jl")
+# end
 
-include("common.jl")
-include("env.jl")
-include("lib.jl")
-include("util.jl")
-include("conf.jl")
+# include("common.jl")
+# include("env.jl")
+# include("lib.jl")
+# include("util.jl")
+# include("conf.jl")
 
-# include("arg.jl")
-# include("cd.jl")
-# include("clock.jl")
-include("colour.jl")
+# # include("arg.jl")
+# # include("cd.jl")
+# # include("clock.jl")
+# include("colour.jl")
 # include("commands.jl")
 # include("complete.jl")
 # include("daemon.jl")
@@ -67,17 +77,17 @@ include("colour.jl")
 # include("user.jl")
 # include("wd.jl")
 # include("window.jl")
-include("xshell.jl")
+# include("xshell.jl")
 
-include("main.jl")
+# include("main.jl")
 
+# # end
+
+# # using xsh
+
+# if !haskey(ENV,"BUILD") && !haskey(ENV,"TESTING")
+#     main(ARGS)
 # end
-
-# using xsh
-
-if !haskey(ENV,"BUILD") && !haskey(ENV,"TESTING")
-    main(ARGS)
-end
 
 # end
 
