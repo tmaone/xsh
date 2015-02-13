@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
-# usage: jldownload [<output-filename>] <url>
+# usage: download [<output-filename>] <url>
 #
 
 MIRROR_HOST=http://d304tytmzqn1fl.cloudfront.net

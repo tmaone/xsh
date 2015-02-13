@@ -2,12 +2,14 @@
 
 module xsh
 
-include("xsh_h.jl")
+using Color
 
+export xsh
 
+import Base
 
-
-
+include("common.jl")
+    
 end
 
 

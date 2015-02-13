@@ -11,12 +11,12 @@ immutable GitVersionInfo
 end
 
 const GIT_VERSION_INFO = GitVersionInfo(
-    "1b748f2de3d40c809ed3291cc2ddb6e381f1c383",
-    "1b748f2*",
+    "8e92541a5f5c7c3b2eae117a0b9daa471009d3a6",
+    "8e92541*",
     "master",
+    1,
+    "2015-02-13 11:47 UTC",
+    false,
     0,
-    "2015-02-13 11:37 UTC",
-    true,
-    0,
-    1423827427.
+    1423828038.
 )

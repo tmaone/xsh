@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
-# usage: jlchecksum <filename>
+# usage: checksum <filename>
 #
 
 if [ -z "$1" ]; then
-    echo "Usage: ./jlchecksum <filename>" >&2
+    echo "Usage: ./checksum <filename>" >&2
     exit 1
 fi
 

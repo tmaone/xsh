@@ -5,7 +5,7 @@ else
 IS_GIT = 0
 endif
 
-XSH_FVER = $(shell cat $(XSH_HOME)/version)
+XSH_FVER = $(shell cat $(XSH_HOME)/VERSION)
 XSH_COMMIT =
 XSH_VER = 
 ifeq ($(IS_GIT), 1)
@@ -22,6 +22,12 @@ else
 JULIA = 
 USE_SYSTEM_JULIA = 0
 endif
+
+# Prevent picking up $ARCH from the environment variables
+ARCH=
+
+# disable automatic Makefile rules
+.SUFFIXES:
 
 # Directories where said libraries get installed to
 prefix ?= $(abspath xsh-$(XSH_VER))
@@ -56,6 +62,25 @@ XSH_EXECUTABLE = $(XSH_EXECUTABLE)
 XSH_LIBRARY=$(build_private_libdir)/libxsh.dylib
 XSH_SYSTEM_IMAGE=$(build_private_libdir)/xsh-sys.ji
 
+TAGGED_RELEASE_BANNER = ""
+
+# Scripts
+
+INSTALL_F = $(XSH_HOME)/scripts/install 644
+INSTALL_M = $(XSH_HOME)/scripts/install 755
+DOWNLOAD = $(XSH_HOME)/scripts/download
+CHECKSUM = $(XSH_HOME)/scripts/checksum
+RELATIVE_PATH =  $(XSH_HOME)/scripts/relative_path
+
+# Calculate relative paths to libdir, private_libdir, datarootdir, and sysconfdir
+build_libdir_rel = $(shell $(RELATIVE_PATH) $(build_bindir) $(build_libdir))
+libdir_rel = $(shell $(RELATIVE_PATH) $(bindir) $(libdir))
+build_private_libdir_rel = $(shell  $(RELATIVE_PATH) $(build_bindir) $(build_private_libdir))
+private_libdir_rel = $(shell  $(RELATIVE_PATH) $(bindir) $(private_libdir))
+datarootdir_rel = $(shell  $(RELATIVE_PATH) $(bindir) $(datarootdir))
+docdir_rel = $(shell  $(RELATIVE_PATH)$(bindir) $(docdir))
+sysconfdir_rel = $(shell  $(RELATIVE_PATH) $(bindir) $(sysconfdir))
+
 # Julia Definitions
 # JULIA_BIN=$(build_bindir)/julia
 # JULIA_INCLUDE=$(build_includedir)/julia
@@ -67,6 +92,96 @@ XSH_SYSTEM_IMAGE=$(build_private_libdir)/xsh-sys.ji
 # JULIA_BUILD_SYSIMG=$(JULIA_SHARE)/build_sysimg.jl
 # JULIA_CPU_TARGET ?= native
 # JULIA_PKGDIR=$(JULIA_SHARE)/site
+
+# Figure out OS and architecture
+BUILD_OS := $(shell uname)
+
+# Figure out OS and architecture
+OS := $(BUILD_OS)
+
+fPIC = -fPIC
+
+# Compiler specific stuff
+
+ifeq ($(USEMSVC), 1)
+USEGCC = 0
+USECLANG = 0
+USEICC = 0
+else
+ifeq ($(USECLANG), 1)
+USEGCC = 0
+USEICC = 0
+else
+ifeq ($(USEICC), 1)
+USEGCC = 0
+USECLANG = 0
+else  # default to gcc
+USEGCC = 1
+USECLANG = 0
+USEICC = 0
+endif
+endif
+endif
+
+ifeq ($(OS), Darwin)
+DARWINVER := $(shell uname -r | cut -b 1-2)
+DARWINVER_GTE13 := $(shell expr `uname -r | cut -b 1-2` \>= 13)
+OSXVER := $(shell sw_vers -productVersion | cut -b 1-4)
+ifeq ($(DARWINVER), 10) # Snow Leopard specific configuration
+USEGCC = 1
+USECLANG = 0
+else
+ifeq ($(DARWINVER_GTE13),1)
+USE_LIBCPP = 1
+STDLIBCPP_FLAG = -stdlib=libstdc++
+else
+USE_LIBCPP = 0
+endif
+USEGCC = 0
+USECLANG = 1
+endif
+endif
+
+ifeq ($(USEGCC),1)
+ifeq ($(USE_LIBCPP),1)
+$(error USE_LIBCPP only supported with clang. Try setting USE_LIBCPP=0)
+endif
+ifeq ($(SANITIZE),1)
+$(error Address Sanitizer only supported with clang. Try setting SANITIZE=0)
+endif
+CC_BASE = $(CROSS_COMPILE)gcc
+CXX_BASE = $(CROSS_COMPILE)g++
+CC = $(CC_BASE)
+CXX = $(CXX_BASE)
+JCFLAGS = -std=gnu99 -pipe $(fPIC) -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
+JCPPFLAGS =
+JCXXFLAGS = -pipe $(fPIC) -fno-rtti
+DEBUGFLAGS = -O0 -ggdb3 -DJL_DEBUG_BUILD -fstack-protector-all
+SHIPFLAGS = -O3 -ggdb3 -falign-functions
+endif
+
+ifeq ($(USECLANG),1)
+CC_BASE = $(CROSS_COMPILE)clang
+CXX_BASE = $(CROSS_COMPILE)clang++
+CC = $(CC_BASE)
+CXX = $(CXX_BASE)
+JCFLAGS = -pipe $(fPIC) -fno-strict-aliasing -D_FILE_OFFSET_BITS=64
+JCPPFLAGS =
+JCXXFLAGS = -pipe $(fPIC) -fno-rtti
+DEBUGFLAGS = -O0 -g -DJL_DEBUG_BUILD -fstack-protector-all
+SHIPFLAGS = -O3 -g
+ifeq ($(OS), Darwin)
+ifeq ($(USE_LIBCPP), 1)
+CC += -stdlib=libc++ -mmacosx-version-min=10.7
+CXX += -stdlib=libc++ -mmacosx-version-min=10.7
+FC += -mmacosx-version-min=10.7
+else
+CC += $(STDLIBCPP_FLAG) -mmacosx-version-min=10.6
+CXX += $(STDLIBCPP_FLAG) -mmacosx-version-min=10.6
+endif
+JCPPFLAGS += -D_LARGEFILE_SOURCE -D_DARWIN_USE_64_BIT_INODE=1
+endif
+endif
 
 # file extensions
 ifeq ($(OS), WINNT)
@@ -120,6 +235,74 @@ endif
 exec = $(shell $(call spawn,$(1)))
 
 pathsearch = $(firstword $(wildcard $(addsuffix /$(1),$(subst :, ,$(2)))))
+
+CPP = $(CC) -E
+AR := $(CROSS_COMPILE)ar
+AS := $(CROSS_COMPILE)as
+LD := $(CROSS_COMPILE)ld
+
+CPP_STDOUT = $(CPP) -E
+
+BUILD_MACHINE := $(shell $(HOSTCC) -dumpmachine)
+ifeq ($(ARCH),)
+override ARCH := $(shell $(CC) -dumpmachine | sed "s/\([^-]*\).*$$/\1/")
+ifeq ($(ARCH),mingw32)
+$(error "the mingw32 compiler you are using fails the openblas testsuite. please see the README.windows document for a replacement")
+else ifeq (cygwin, $(shell $(CC) -dumpmachine | cut -d\- -f3))
+$(error "cannot build julia with cygwin-target compilers. set XC_HOST to i686-w64-mingw32 or x86_64-w64-mingw32 for mingw cross-compile")
+else ifeq (msys, $(shell $(CC) -dumpmachine | cut -d\- -f3))
+$(error "cannot build julia with msys-target compilers. please see the README.windows document for instructions on setting up mingw-w64 compilers")
+endif
+ifeq ($(BUILD_OS),Darwin)
+## Mac is a rather amazing 64-bit user-space on 32-bit kernel architecture, so to determine arch we detect
+## the capabilities of the hardware, rather than the compiler or kernel, and make a substitution
+ifeq ($(ARCH),x86_64)
+override ARCH = i686
+else ifeq ($(ARCH),i386)
+override ARCH = i686
+endif
+ifeq ($(ARCH),i686)
+ifeq ($(shell sysctl -n hw.cpu64bit_capable),1)
+override ARCH = x86_64
+endif
+BUILD_MACHINE := $(ARCH)$(shell echo $(BUILD_MACHINE) | sed "s/[^-]*\(.*\)$$/\1/")
+endif
+endif
+else
+XC_HOST := $(ARCH)$(shell echo $(BUILD_MACHINE) | sed "s/[^-]*\(.*\)$$/\1/")
+MARCH = $(ARCH)
+endif
+
+ifneq ($(MARCH),)
+CC += -march=$(MARCH)
+CXX += -march=$(MARCH)
+FC += -march=$(MARCH)
+JULIA_CPU_TARGET ?= $(MARCH)
+ifeq ($(OS),Darwin)
+# on Darwin, the standalone `as` program doesn't know
+# how to handle AVX instructions, but it does know how
+# to dispatch to the clang assembler (if we ask it to)
+ifeq ($(USECLANG),1)
+CC += -integrated-as
+CXX += -integrated-as
+else
+CC += -Wa,-q
+CXX += -Wa,-q
+endif
+FC += -Wa,-q
+AS += -q
+endif
+endif
+
+# --whole-archive
+ifeq ($(OS), Darwin)
+  WHOLE_ARCHIVE = -Xlinker -all_load
+  NO_WHOLE_ARCHIVE =
+else ifneq ($(USEMSVC), 1)
+  WHOLE_ARCHIVE = -Wl,--whole-archive
+  NO_WHOLE_ARCHIVE = -Wl,--no-whole-archive
+endif
+
 
 # Colors for make
 ifndef VERBOSE
