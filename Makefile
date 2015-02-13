@@ -32,7 +32,7 @@ $(build_sysconfdir)/xshrc:
 	@cp $< $@
 
 julia:
-	$(call spawn,$(JULIA)) 
+	$(call spawn,$(JULIA))
 
 run:
 	$(call spawn,$(JULIA)) src/xsh.jl
@@ -62,7 +62,7 @@ build_h.jl:
 
 # devel-sys:
 # 	@export JULIA_PKGDIR=$(JULIA_PKGDIR) && \
-# 	$(call spawn,$(JULIA_BIN)) -C $(JULIA_CPU_TARGET) -J$(JULIA_SYSTEM_IMAGE) 
+# 	$(call spawn,$(JULIA_BIN)) -C $(JULIA_CPU_TARGET) -J$(JULIA_SYSTEM_IMAGE)
 
 # devel-sys-xshell:
 # 	@export JULIA_PKGDIR=$(JULIA_PKGDIR) && \
@@ -112,7 +112,7 @@ build_h.jl:
 
 # devel-sys:
 # 	@export JULIA_PKGDIR=$(JULIA_PKGDIR) && \
-# 	$(call spawn,$(JULIA_BIN)) -C $(JULIA_CPU_TARGET) -J$(JULIA_SYSTEM_IMAGE) 
+# 	$(call spawn,$(JULIA_BIN)) -C $(JULIA_CPU_TARGET) -J$(JULIA_SYSTEM_IMAGE)
 
 # devel-sys-xshell:
 # 	@export JULIA_PKGDIR=$(JULIA_PKGDIR) && \
@@ -126,11 +126,11 @@ build_h.jl:
 # 	@export JULIA_PKGDIR=$(JULIA_PKGDIR) && \
 # 	$(call spawn,$(JULIA_BIN)) -C $(JULIA_CPU_TARGET) -J$(XSHELL_SYSTEM_IMAGE)
 
-# all: 
+# all:
 # 	# @echo $(IS_GIT)
-# 	# @echo $(JULIA) 
-# 	# @echo $(USE_SYSTEM_JULIA) 
-# 	# @echo $(XSH_VER) 
-# 	# @echo $(XSH_COMMIT) 
+# 	# @echo $(JULIA)
+# 	# @echo $(USE_SYSTEM_JULIA)
+# 	# @echo $(XSH_VER)
+# 	# @echo $(XSH_COMMIT)
 
 # .PHONY: all

@@ -1,20 +1,10 @@
 /*.tar.gz
-/tmp
-/dist
-/dist-extras
 /usr
-/julia-*
-/source-dist.tmp
-/source-dist.tmp1
-
+/tmp
+/developing
 /build
 xsh
 
-/tmp
-
-*.exe
-*.dll
-*.do
 *.o
 *.obj
 *.dylib
@@ -23,7 +13,5 @@ xsh
 *.jl.mem
 *.ji
 
-.DS_Store
 
-*.jl.cov
-*.jl.mem
+.DS_Store
