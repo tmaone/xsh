@@ -1,15 +1,15 @@
-#!/usr/bin/env julia --depwarn=no
+#!/usr/bin/env julia --depwarn=yes
 
-baremodule xsh
+# baremodule xsh
 
-import Base:
-    include,
-    isfile
+# import Base:
+#     include,
+#     isfile
 
-importall Base.Operators
+# importall Base.Operators
 
-eval(x) = Core.eval(xsh, x)
-eval(m,x) = Core.eval(m, x)
+# eval(x) = Core.eval(xsh, x)
+# eval(m,x) = Core.eval(m, x)
 
 include("version.jl")
 
@@ -21,7 +21,7 @@ include("common.jl")
 include("env.jl")
 include("lib.jl")
 include("util.jl")
-
+include("conf.jl")
 
 include("arg.jl")
 include("cd.jl")
@@ -29,7 +29,6 @@ include("clock.jl")
 include("colour.jl")
 include("commands.jl")
 include("complete.jl")
-include("config.jl")
 include("daemon.jl")
 include("debug.jl")
 include("dir.jl")
@@ -71,9 +70,9 @@ include("xshell.jl")
 
 include("main.jl")
 
-end
+# end
 
-using xsh
+# using xsh
 
 if !haskey(ENV,"BUILD") && !haskey(ENV,"TESTING")
     main(ARGS)

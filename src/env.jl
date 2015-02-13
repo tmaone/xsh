@@ -1,11 +1,11 @@
 module env
 
-import Base:
-    ENV,
-    string,
-    _hasenv,
-    length,
-    show
+# import Base:
+#     ENV,
+#     string,
+#     _hasenv,
+#     length,
+#     show
 
 # export 
 

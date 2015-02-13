@@ -1,8 +1,8 @@
 module colour
 
-using xsh.lib.nc
-using xsh.util
-using xsh.util.string
+using ..lib.nc
+using ..util
+using ..util.string
 
 using Color, Color.names
 using Compat

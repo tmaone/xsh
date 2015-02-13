@@ -1,5 +1,7 @@
 module util
 
+using Switch
+
 export @enum
 
 include("util.string.jl")
@@ -23,5 +25,7 @@ macro enum(T,syms...)
     blk.head = :toplevel
     return blk
 end
+
+export @switch, @case, @default, break
 
 end

@@ -1,6 +1,6 @@
 module nc
 
-using xsh.lib
+using ..lib
 
 add_lib(Library(:ncurses,"libncursestw"))
 add_lib(Library(:form, "libformtw"))
