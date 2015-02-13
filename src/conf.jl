@@ -1,7 +1,8 @@
+export conf
+
 module conf
 
 file_name = ASCIIString
-
 command = ""
 quiet = false
 verbose = 0
@@ -18,7 +19,9 @@ no_exec = false
 no_history = false
 no_startup = false
 
-export file_name, command, quiet, verbose, debug_mode, home_path, interactive, login, daemon_only, ncpu, print_expr, color_mode, eval_expr, no_exec, no_history, no_startup
+end
+
+# export file_name, command, quiet, verbose, debug_mode, home_path, interactive, login, daemon_only, ncpu, print_expr, color_mode, eval_expr, no_exec, no_history, no_startup
 
 # function __init__()
 
@@ -131,4 +134,4 @@ export file_name, command, quiet, verbose, debug_mode, home_path, interactive, l
 # LANG = get("LANG")
 # LC_ALL = get("LC_ALL")
 # USER, SHELL, HOME, PATH, PWD, TERM, TMPDIR, LANG, LC_ALL,
-end
+# end

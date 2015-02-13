@@ -14,7 +14,7 @@ export main
 # source_path,
 # Dict
 
-import ..conf
+using ..conf
 using ..util
 
 using ArgParse
@@ -191,9 +191,9 @@ function parse_argument(key::ASCIIString, value::ANY)
         break
         @case "file"
         print("file : $(value)")
-        conf.file_name = value
-        print("$(file_name) : $(value)")
-        print("$(conf.file_name) : $(value)")
+        # conf.file_name = value
+        # print("$(conf.file_name) : $(value)")
+        # print("$(conf.file_name) : $(value)")
         break
         @case "color"
         # xsh_config.color_mode = value   
@@ -215,14 +215,16 @@ function parse_args(args::Vector{UTF8String}=UTF8String[])
     end
 end
 
-function __init__()
+function init()
     init_arg_table()
+
 end
 
 function main(args::Vector{UTF8String}=UTF8String[])
+    init()
     println(XSH_DESCRIPTION)
     parsed_args = parse_args(args)
-    println(conf.file_name)
-    println(file_name)
+    # println(conf.file_name)
+    # println(file_name)
     # dump(config)
 end
