@@ -7,7 +7,7 @@ endif
 
 XSH_FVER = $(shell cat $(XSH_HOME)/VERSION)
 XSH_COMMIT =
-XSH_VER = 
+XSH_VER =
 ifeq ($(IS_GIT), 1)
 XSH_COMMIT = $(shell git rev-parse --short=5 HEAD)
 XSH_VER = $(XSH_FVER).$(XSH_COMMIT)
@@ -19,7 +19,7 @@ ifneq ($(shell which julia 2>/dev/null),)
 JULIA=$(shell which julia 2>/dev/null)
 USE_SYSTEM_JULIA = 1
 else
-JULIA = 
+JULIA =
 USE_SYSTEM_JULIA = 0
 endif
 
@@ -182,6 +182,8 @@ endif
 JCPPFLAGS += -D_LARGEFILE_SOURCE -D_DARWIN_USE_64_BIT_INODE=1
 endif
 endif
+
+HOSTCC=$(CC)
 
 # file extensions
 ifeq ($(OS), WINNT)

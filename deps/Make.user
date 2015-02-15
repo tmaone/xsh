@@ -1,1 +1,0 @@
-prefix = $(abspath ..)/build

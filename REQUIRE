@@ -3,6 +3,8 @@ BinDeps
 @osx Homebrew
 @windows WinRPM
 
+NCurses
+
 Compat
 Options
 TextWrap

@@ -332,7 +332,7 @@ function getmouse()
     x = uint8(bs[5])
     y = uint8(bs[9])
     state=:unknown
-    println(bs, x, y, state)    
+    println(bs, x, y, state)
     # if bs[17] & 0x02 != 0
     #     state = :button1_pressed
     # elseif bs[19] & 0x08 != 0
